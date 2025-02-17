@@ -1,3 +1,4 @@
+# .github/workflows/builder.yaml
 name: "Builder for Re:Delivery"
 
 env:
@@ -55,6 +56,7 @@ jobs:
             echo "addons=[$changed]" >> $GITHUB_OUTPUT;
           else
             echo "No add-on had any monitored files changed (${{ env.MONITORED_FILES }})";
+            echo "changed=false" >> $GITHUB_OUTPUT;
           fi
 
   build:
