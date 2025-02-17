@@ -6,14 +6,21 @@
 
 bashio::log.info "Initializing Re:Delivery..."
 
-WEB_PORT=$(bashio::config 'web_port' || echo "3140")
+# Ensure glibc is installed
+if ldd --version; then
+    bashio::log.info "glibc is installed!"
+else
+    bashio::log.error "ERROR: glibc is missing!"
+fi
 
-bashio::log.info "Starting Re:Delivery web server on port ${WEB_PORT}"
+bashio::log.info "System architecture: $(uname -m)"
 
-#chmod +x /app/redelivery
+# Check if the service is already running
+if pgrep -f "/app/redelivery" > /dev/null; then
+    bashio::log.warning "Re:Delivery is already running! Exiting..."
+    exit 0
+fi
 
-bashio::log.info "Now running!"
-
-
-#exec /app/redelivery
-exec sleep infinity
+chmod +x /app/redelivery
+bashio::log.info "Running Re:Delivery binary now!"
+exec /lib64/ld-linux-x86-64.so.2 /app/redelivery

@@ -1,6 +1,6 @@
-# Home Assistant Add-on: Re:Delivery
+# Re:Delivery - Home Assistant Add-on
 
-_Example add-on to use as a blueprint for new add-ons._
+Local, private package tracking from your email inbox.
 
 ![Supports aarch64 Architecture][aarch64-shield]
 ![Supports amd64 Architecture][amd64-shield]

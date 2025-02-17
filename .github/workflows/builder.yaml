@@ -1,13 +1,14 @@
-name: Builder
+# .github/workflows/builder.yaml
+name: "Builder for Re:Delivery"
 
 env:
   BUILD_ARGS: "--test"
-  MONITORED_FILES: "build.yaml config.yaml Dockerfile rootfs"
+  MONITORED_FILES: "build.yaml config.yaml Dockerfile rootfs cmd/ api/ services/ models/ utils/ config/ go.mod go.sum"
 
 on:
   push:
     branches:
-      - main
+      - main # runs on every push to main
   pull_request:
     branches:
       - main
@@ -55,16 +56,19 @@ jobs:
             echo "addons=[$changed]" >> $GITHUB_OUTPUT;
           else
             echo "No add-on had any monitored files changed (${{ env.MONITORED_FILES }})";
+            echo "changed=false" >> $GITHUB_OUTPUT;  # Add this line to handle no changes
           fi
+
   build:
     needs: init
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     if: needs.init.outputs.changed == 'true'
     name: Build ${{ matrix.arch }} ${{ matrix.addon }} add-on
     strategy:
       matrix:
-        addon: ${{ fromJson(needs.init.outputs.changed_addons) }}
-        arch: ["aarch64", "amd64", "armhf", "armv7", "i386"]
+        arch: ["aarch64", "amd64", "armhf", "i386"]
+      max-parallel: 1 # Run only 1 architecture build at a time
     permissions:
       contents: read
       packages: write
@@ -104,6 +108,13 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build Go binary for ${{ matrix.arch }}
+        if: steps.check.outputs.build_arch == 'true'
+        run: |
+          cd ${{ matrix.addon }}
+          GOARCH=${{ matrix.arch }} GOOS=linux CGO_ENABLED=1 CC=gcc go build -o redelivery-${{ matrix.arch }} cmd/main.go
+          chmod +x redelivery-${{ matrix.arch }}
+
       - name: Build ${{ matrix.addon }} add-on
         if: steps.check.outputs.build_arch == 'true'
         uses: home-assistant/builder@2024.08.2
@@ -115,3 +126,6 @@ jobs:
             --image "${{ steps.check.outputs.image }}" \
             --docker-hub "ghcr.io/${{ github.repository_owner }}" \
             --addon
+concurrency:
+  group: ${{ github.ref }}-build
+  cancel-in-progress: false # Do not cancel ongoing builds
