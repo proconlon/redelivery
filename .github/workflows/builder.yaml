@@ -1,13 +1,13 @@
-name: Builder
+name: "Builder for Re:Delivery"
 
 env:
   BUILD_ARGS: "--test"
-  MONITORED_FILES: "build.yaml config.yaml Dockerfile rootfs"
+  MONITORED_FILES: "build.yaml config.yaml Dockerfile rootfs cmd/ api/ services/ models/ utils/ config/ go.mod go.sum"
 
 on:
   push:
     branches:
-      - main
+      - main # runs on every push to main
   pull_request:
     branches:
       - main
@@ -56,6 +56,7 @@ jobs:
           else
             echo "No add-on had any monitored files changed (${{ env.MONITORED_FILES }})";
           fi
+
   build:
     needs: init
     runs-on: ubuntu-latest
@@ -103,6 +104,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Go binary for ${{ matrix.arch }}
+        if: steps.check.outputs.build_arch == 'true'
+        run: |
+          cd ${{ matrix.addon }}
+          GOARCH=${{ matrix.arch }} GOOS=linux CGO_ENABLED=1 CC=gcc go build -o redelivery-${{ matrix.arch }} cmd/main.go
+          chmod +x redelivery-${{ matrix.arch }}
 
       - name: Build ${{ matrix.addon }} add-on
         if: steps.check.outputs.build_arch == 'true'
