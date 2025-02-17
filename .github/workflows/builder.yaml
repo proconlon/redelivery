@@ -67,6 +67,7 @@ jobs:
     name: Build ${{ matrix.arch }} ${{ matrix.addon }} add-on
     strategy:
       matrix:
+	addon: ${{ fromJson(needs.init.outputs.changed_addons) }}
         arch: ["aarch64", "amd64", "armhf", "i386"]
       max-parallel: 1 # Run only 1 architecture build at a time
     permissions:
