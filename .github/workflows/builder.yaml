@@ -126,7 +126,8 @@ jobs:
             --target /data/${{ matrix.addon }} \
             --image "${{ steps.check.outputs.image }}" \
             --docker-hub "ghcr.io/${{ github.repository_owner }}" \
-            --addon
+            --addon \
+            --no-cache
 concurrency:
   group: ${{ github.ref }}-build
   cancel-in-progress: false # Do not cancel ongoing builds
