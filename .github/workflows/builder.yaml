@@ -56,11 +56,7 @@ jobs:
             echo "addons=[$changed]" >> $GITHUB_OUTPUT;
           else
             echo "No add-on had any monitored files changed (${{ env.MONITORED_FILES }})";
-<<<<<<< HEAD
-            echo "changed=false" >> $GITHUB_OUTPUT;  # Add this line to handle no changes
-=======
-            echo "changed=false" >> $GITHUB_OUTPUT;
->>>>>>> 9ab1d60 (modified builder)
+            echo "changed=false" >> $GITHUB_OUTPUT; 
           fi
 
   build:
