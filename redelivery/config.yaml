@@ -10,10 +10,8 @@ arch:
   - aarch64
   - amd64
   - i386
-webui: "http://[HOST]:[PORT:8080]/dashboard"
 init: false
-map:
-  - config:rw
+homeassistant_config: rw
 options:
   email_user: "your_email@gmail.com"
   email_pass: "your_APP_password"
