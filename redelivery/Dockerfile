@@ -19,5 +19,3 @@ COPY rootfs/ /
 RUN chmod a+x /etc/services.d/redelivery/run
 
 EXPOSE 8080
-
-# Hello?
