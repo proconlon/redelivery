@@ -2,20 +2,6 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build Go Binary (glibc)",
-      "type": "shell",
-      "command": "cd redelivery && export BUILD_ARCH=$(go env GOARCH) && CGO_ENABLED=1 CC=gcc GOOS=linux go build -o redelivery-$BUILD_ARCH cmd/main.go && echo Built binary: redelivery-$BUILD_ARCH",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
-      },
-      "problemMatcher": []
-    },
-    {
       "label": "Start Home Assistant",
       "type": "shell",
       "command": "supervisor_run",
