@@ -15,12 +15,5 @@ fi
 
 bashio::log.info "System architecture: $(uname -m)"
 
-# Check if the service is already running
-if pgrep -f "/app/redelivery" > /dev/null; then
-    bashio::log.warning "Re:Delivery is already running! Exiting..."
-    exit 0
-fi
-
-chmod +x /app/redelivery
 bashio::log.info "Running Re:Delivery binary now!"
-exec /lib64/ld-linux-x86-64.so.2 /app/redelivery
+exec /lib64/ld-linux-x86-64.so.2 /usr/bin/redelivery-core
