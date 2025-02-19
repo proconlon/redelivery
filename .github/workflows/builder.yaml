@@ -56,7 +56,6 @@ jobs:
           else
             echo "No add-on had any monitored files changed (${{ env.MONITORED_FILES }})";
           fi
-
   build:
     needs: init
     runs-on: ubuntu-latest
@@ -105,25 +104,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Delete old GHCR images
-        if: env.BUILD_ARGS != '--test'
-        run: |
-          echo "🧹 Cleaning up old images for ${{ steps.check.outputs.image }}"
-          gh api \
-            --method DELETE \
-            -H "Accept: application/vnd.github+json" \
-            "/user/packages/container/${{ steps.check.outputs.image }}/versions" \
-            --jq '.[] | .id' | while read -r version; do
-              echo "🗑 Deleting version $version"
-              gh api \
-                --method DELETE \
-                -H "Accept: application/vnd.github+json" \
-                "/user/packages/container/${{ steps.check.outputs.image }}/versions/$version"
-            done
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build & Push Updated GHCR Image
+      - name: Build ${{ matrix.addon }} add-on
         if: steps.check.outputs.build_arch == 'true'
         uses: home-assistant/builder@2024.08.2
         with:
@@ -133,5 +114,4 @@ jobs:
             --target /data/${{ matrix.addon }} \
             --image "${{ steps.check.outputs.image }}" \
             --docker-hub "ghcr.io/${{ github.repository_owner }}" \
-            --addon \
-            --tag latest
+            --addon
